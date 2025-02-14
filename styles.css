@@ -1,4 +1,18 @@
-.grantha-text { font-family: 'GranthaFont', serif; } 
+@font-face {
+    font-family: 'NotoSansGrantha';
+    src: url('https://cdn.jsdelivr.net/gh/virtualvinodh/aksharamukha/aksharamukha-front/src/statics/NotoSansGrantha-RegularZach.otf') format('opentype');
+}
+
+/* Apply globally to all input and output text boxes */
+.grantha-text {
+    font-family: 'NotoSansGrantha', sans-serif !important;
+}
+
+#inputText, #outputText {
+    font-family: inherit;
+}
+
+
 .tamil-text { font-family: 'Latha', sans-serif; }
 .devanagari-text { font-family: 'Noto Sans Devanagari', sans-serif; }
 .roman-text { font-family: 'Times New Roman', serif; }
