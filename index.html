@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Grantha&family=Noto+Sans+Tamil:wght@100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -90,105 +91,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-
-  <script>
-    let output = "";
-    const modelURL = "https://teachablemachine.withgoogle.com/models/cWDmYkcUn/model.json";
-    const metadataURL = "https://teachablemachine.withgoogle.com/models/cWDmYkcUn/metadata.json";
-    let model;
-
-    async function loadModel() {
-      model = await tmImage.load(modelURL, metadataURL);
-    }
-    loadModel();
-
-    function swapScripts() {
-      const sourceScript = document.getElementById("sourceScript");
-      const targetScript = document.getElementById("targetScript");
-      const temp = sourceScript.value;
-      sourceScript.value = targetScript.value;
-      targetScript.value = temp;
-    }
-
-    async function transliterate() {
-      const inputText = document.getElementById("inputText").value;
-      const sourceScript = document.getElementById("sourceScript").value;
-      const targetScript = document.getElementById("targetScript").value;
-
-      if (!inputText.trim()) {
-        alert("Please enter some text.");
-        return;
-      }
-
-      try {
-        const response = await fetch(
-          `https://aksharamukha-plugin.appspot.com/api/public?source=${sourceScript}&target=${targetScript}&text=${encodeURIComponent(inputText)}`
-        );
-        const result = await response.text();
-        output = result;
-        document.getElementById("outputText").textContent = result;
-      } catch (error) {
-        alert("An error occurred while fetching the result. Please try again.");
-        console.error(error);
-      }
-    }
-
-    function downloadOutput() {
-      if (!output) {
-        alert("No output to download.");
-        return;
-      }
-      const blob = new Blob([output], { type: "text/plain" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "output.txt";
-      link.click();
-    }
-
-    function predict() {
-      const fileInput = document.getElementById("imageUpload");
-      const uploadedImage = document.getElementById("uploadedImage");
-      const labelContainer = document.getElementById("label-container");
-
-      if (!fileInput.files.length) {
-        alert("Please upload an image.");
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = async function (event) {
-        uploadedImage.src = event.target.result;
-        uploadedImage.classList.remove("hidden");
-
-        const img = new Image();
-        img.src = event.target.result;
-        maxPredictions = model.getTotalClasses();
-        
-        img.onload = async function () {
-          const prediction = await model.predict(img);
-          labelContainer.innerHTML = "";
-
-          const tamilMapping = {
-  "a": "அ", "aa": "ஆ", "ai": "ஐ", "cha": "ச", "e": "எ", "ee": "ஏ",
-  "i": "இ", "ii": "ஈ", "ka": "க", "la": "ல", "lla": "ள", "ma": "ம",
-  "na": "ந", "nga": "ங", "nja": "ஞ", "nna": "ண", "nnna": "ன", "o": "ஒ",
-  "oo": "ஓ", "pa": "ப", "ra": "ர", "rra": "ற", "ta": "த", "tha": "தா",
-  "u": "உ", "uu": "ஊ", "va": "வ", "ya": "ய", "zha": "ழ"
-};
-
-// Find the prediction with the highest probability
-const highestPrediction = prediction.reduce((max, p) => (p.probability > max.probability ? p : max), prediction[0]);
-
-// Map className to Tamil if it exists, otherwise use the original className
-const tamilChar = tamilMapping[highestPrediction.className] || highestPrediction.className;
-
-// Display only the highest probability prediction
-labelContainer.innerHTML = `<p>${tamilChar}: ${highestPrediction.probability.toFixed(2)}</p>`;
-
-        };
-      };
-      reader.readAsDataURL(fileInput.files[0]);
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
